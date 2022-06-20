@@ -40,4 +40,3 @@ def detect_handlers(module_package_path: str) -> NoReturn:
                 if isinstance(attr, type) and issubclass(attr, InferHandler):
                     # duplication
                     append_handler(attr)
-

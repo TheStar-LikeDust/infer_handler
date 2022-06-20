@@ -24,7 +24,7 @@ registered_image_processor: Dict[str, Callable] = {
 }
 
 
-def initial_pool(initial_callback: Callable = None, initial_callback_arguments: tuple = None):
+def initial_pool(initial_callback: Callable = None, initial_callback_arguments: tuple = tuple()):
     """TODO: 进程池
 
     Args:
@@ -34,12 +34,16 @@ def initial_pool(initial_callback: Callable = None, initial_callback_arguments: 
     # TODO: callback
     global pool
 
-    pool = ProcessPoolExecutor()
+    if not initial_callback:
+        initial_callback = None
+        initial_callback_arguments = tuple()
+
+    pool = ProcessPoolExecutor(initializer=initial_callback, initargs=initial_callback_arguments)
 
 
 def infer_callback(handle_name: str,
                    image_info: Any,
-                   image_processor_name='raw_image',
+                   image_processor_name: str,
                    other_kwargs: dict = None) -> Any:
     """共享内存的一次推理任务函数
 
@@ -52,12 +56,14 @@ def infer_callback(handle_name: str,
     Returns:
         Any: 模型Handler处理的结果
     """
+    image_processor_name = image_processor_name if image_processor_name else 'raw_image'
+    other_kwargs = other_kwargs if other_kwargs else {}
 
     # 根据名字找到某个Handler - 找到某个模型
     handle = get_handler(handle_name)
 
     # 根据传入的名字获取加载图片的处理函数
-    image_processor = registered_image_processor.get('raw_image')
+    image_processor = registered_image_processor.get(image_processor_name)
 
     # 通过图片处理函数处理图片
     image = image_processor(image_info)
@@ -68,11 +74,11 @@ def infer_callback(handle_name: str,
     return handle_result
 
 
-def infer_handle(handle_name: str,
-                 image_info: Any = None,
-                 image_processor_name: str = None,
-                 other_kwargs: dict = None
-                 ) -> Future:
+def handler_process(handle_name: str,
+                    image_info: Any = object(),
+                    image_processor_name: str = 'raw_image',
+                    other_kwargs: dict = None
+                    ) -> Future:
     """添加任务的入口函数"""
     return pool.submit(
         infer_callback,

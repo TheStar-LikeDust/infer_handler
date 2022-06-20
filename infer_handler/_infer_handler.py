@@ -3,8 +3,10 @@
 
 """
 from abc import abstractmethod
+from logging import getLogger
 from typing import Any, Optional
 
+logger = getLogger('infer_handler')
 
 
 class InferHandlerMeta(type):
@@ -28,9 +30,28 @@ class InferHandler(object, metaclass=InferHandlerMeta):
     name: str
     """类名"""
 
+    keep_context: bool = False
+    """保存上下文"""
+
     # block instance
     def __new__(cls, *args, **kwargs):
         return InferHandler
+
+    @classmethod
+    def initial_handler(cls):
+        """初始化模板方法"""
+        try:
+            cls._initial_handler()
+        except Exception as e:
+            logger.error(f'Handler: {cls.name} initial failed.', exc_info=e)
+            return False
+        else:
+            return True
+
+    @classmethod
+    @abstractmethod
+    def _initial_handler(cls):
+        pass
 
     @classmethod
     @abstractmethod
@@ -61,8 +82,8 @@ class InferHandler(object, metaclass=InferHandlerMeta):
         kwargs.update({'infer_result': infer_result})
 
         post_result = cls._post_process(image, **kwargs)
-        post_result = post_result if post_result else {}
-        return {
-            **post_result,
-            'original': kwargs,
-        }
+
+        if cls.keep_context:
+            return post_result
+        else:
+            return post_result

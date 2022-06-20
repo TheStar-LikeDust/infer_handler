@@ -1,3 +1,15 @@
+# whitelist
+*.*
+
+!/infer_handler/**/*.*
+!/tests/**/*.*
+!.gitignore
+!LICENSE
+!README.md
+!setup.py
+!tutorial.md
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

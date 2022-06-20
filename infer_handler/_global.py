@@ -42,6 +42,9 @@ def append_handler(handler_class: Type[InferHandler]) -> Optional[Type[InferHand
     Returns:
         Optional[Type[InferHandler]]: 成功添加则返回类本身
     """
+    # case 只加入不存在的
     if handler_class not in __global_handlers:
-        __global_handlers.append(handler_class)
-        return handler_class
+        # case 初始化成功才加入
+        if handler_class.initial_handler():
+            __global_handlers.append(handler_class)
+            return handler_class

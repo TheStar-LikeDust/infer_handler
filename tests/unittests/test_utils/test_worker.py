@@ -2,7 +2,7 @@ import unittest
 from concurrent.futures import ProcessPoolExecutor
 
 from infer_handler.utils.detect import detect_handlers
-from infer_handler.utils.worker import initial_pool, infer_handle
+from infer_handler.utils.worker import initial_pool, handler_process
 
 import numpy
 
@@ -18,7 +18,7 @@ class SchedulerTestCase(unittest.TestCase):
     def test_process_image_handle(self):
         image = numpy.ndarray(shape=(123, 456, 789), dtype=numpy.uint8)
 
-        future = infer_handle('blank_handler', raw_image=image, other_kwargs={'info': 'info_content'})
+        future = handler_process('blank_handler', image_info=image, other_kwargs={'info': 'info_content'})
 
         assert future
 

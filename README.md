@@ -47,10 +47,10 @@ initial_pool()
 3. 调用 - 并行处理
 
 ```python
-from infer_handler.utils.worker import infer_handle
+from infer_handler.utils.worker import handler_process
 
 # 指定Handler 放入图片 设置其他参数
-future = infer_handle('blank_handler', raw_image=image, other_kwargs={'info': 'info_content'})
+future = handler_process('blank_handler', raw_image=image, other_kwargs={'info': 'info_content'})
 
 # 得到结果
 result = future.result()
