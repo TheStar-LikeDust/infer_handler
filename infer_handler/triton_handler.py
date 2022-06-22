@@ -11,7 +11,7 @@ from tritonclient.http import InferInput, InferRequestedOutput, InferenceServerC
 from . import InferHandler
 
 CLIENT: Optional[InferenceServerClient] = None
-"""当前全局的"""
+"""当前全局的Triton 客户端连接"""
 
 
 def get_client() -> InferenceServerClient:
@@ -29,7 +29,7 @@ def set_client(client: InferenceServerClient) -> InferenceServerClient:
 class TritonHandler(InferHandler):
     """基于Triton的ImageHandler类，使用Python Backend包装前后处理
 
-    Note:
+    .. Note::
         Triton所需要的Input、Output尽可能置为全局变量，方便子进程初始化
 
     """
@@ -45,7 +45,7 @@ class TritonHandler(InferHandler):
 
     @classmethod
     def _infer_process(cls, image: Any, **kwargs) -> Optional:
-        """默认的"""
+        """默认的Triton处理流程"""
         client = get_client()
 
         # TODO: 异步

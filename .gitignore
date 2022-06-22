@@ -9,6 +9,12 @@
 !setup.py
 !tutorial.md
 
+# sphinx
+!/source/conf.py
+!/source/index.rst
+
+Makefile
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

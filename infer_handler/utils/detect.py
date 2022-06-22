@@ -19,7 +19,7 @@ def detect_handlers(module_package_path: str) -> NoReturn:
     """自动检测路径下的模块并且将其中的Handler类放入全局Handler列表中
 
     Args:
-        module_package_path (str): 符合Python Packageg格式的路径
+        module_package_path (str): 符合Python package格式的路径
 
     """
     # will raise ModuleNotFound
