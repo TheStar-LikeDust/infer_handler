@@ -64,11 +64,11 @@ def initial_callback():
     detect_handlers('handlers')
 
 
-from infer_handler.utils import initial_pool, handler_process
+from infer_handler.utils import initial_handler_pool, handler_process
 
 if __name__ == '__main__':
     # 初始化子进程池
-    initial_pool(initial_callback=initial_callback)
+    initial_handler_pool(initial_callback=initial_callback)
 
     # handler_name: 类名
     handler_name = 'AlphaHandler'

@@ -18,13 +18,18 @@
 
 """
 
-from concurrent.futures import ProcessPoolExecutor, Future
-from typing import Optional, Callable, Dict, Any
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, Future
+from typing import Optional, Callable, Dict, Any, NoReturn, List
 
 from infer_handler import get_handler
+from .detect import auto_detect_handler
+from . import _global_observer
 
-pool: Optional[ProcessPoolExecutor] = None
+process_pool: Optional[ProcessPoolExecutor] = None
 """核心进程池"""
+
+thread_pool: Optional[ThreadPoolExecutor] = None
+"""observer处理线程池"""
 
 registered_image_converter: Dict[str, Callable] = {
     'raw_image': lambda x: x,
@@ -32,7 +37,7 @@ registered_image_converter: Dict[str, Callable] = {
 """已注册的图像转换器字典"""
 
 
-def initial_pool(initial_callback: Callable = None, initial_callback_arguments: tuple = tuple()):
+def initial_handler_pool(initial_callback: Callable = None, initial_callback_arguments: tuple = tuple()) -> NoReturn:
     """初始化进程
 
     .. Note::
@@ -46,13 +51,25 @@ def initial_pool(initial_callback: Callable = None, initial_callback_arguments: 
         initial_callback (Callable, optional): 进程池子进程初始化回调参数. Defaults to None.
         initial_callback_arguments (tuple, optional): 回调函数参数. Defaults to None.
     """
-    global pool
+    global process_pool
 
     if not initial_callback:
-        initial_callback = None
+        initial_callback_wrapped = auto_detect_handler
         initial_callback_arguments = tuple()
+    else:
+        def initial_callback_wrapped():
+            auto_detect_handler()
+            initial_callback()
 
-    pool = ProcessPoolExecutor(initializer=initial_callback, initargs=initial_callback_arguments)
+    process_pool = ProcessPoolExecutor(max_workers=8,initializer=initial_callback_wrapped, initargs=initial_callback_arguments)
+
+
+def initial_observer_pool() -> ThreadPoolExecutor:
+    """初始化线程池"""
+    global thread_pool
+    thread_pool = ThreadPoolExecutor()
+
+    return thread_pool
 
 
 def infer_callback(handle_name: str,
@@ -101,15 +118,23 @@ def handler_process(handle_name: str,
                     image_processor_name: str = 'raw_image',
                     other_kwargs: dict = None
                     ) -> Future:
-    """执行一次推理任务的入口函数
+    """系统进行推理的入口
 
     在主进程中调用，传入相关信息，子进程将会根据信息执行infer_callback并且返回一个Future。
 
     """
-    return pool.submit(
+    return process_pool.submit(
         infer_callback,
         handle_name,
         image_info,
         image_processor_name,
         other_kwargs,
     )
+
+
+def observer_process(model_name: str,
+                     infer_result: Any, ) -> List[Future]:
+    futures = []
+    for current_observer in filter(lambda x: model_name in x.required_models, _global_observer):
+        futures.append(thread_pool.submit(current_observer.observer_judge_callback, model_name, infer_result))
+    return futures

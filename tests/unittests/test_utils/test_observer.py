@@ -1,15 +1,17 @@
 import time
 import unittest
-from typing import Any, NoReturn
+from typing import Any, NoReturn, Optional
 
-from infer_handler.utils.observer import Observer, observer_judge_callback
+from infer_handler.utils.observer import Observer
 
 
 class Mock(Observer):
     name = 'Mock'
 
-    def judge(self, result: Any) -> bool:
-        return result >= 100
+    required_models = ['mock', ]
+
+    def judge(self) -> Optional[bool]:
+        return True
 
     alarm_flag = False
 
@@ -25,9 +27,9 @@ class MyTestCase(unittest.TestCase):
 
         res_list = [i for i in range(20)]
 
-        [observer_judge_callback(mock, _) for _ in res_list]
+        [mock.observer_judge_callback('mock', _) for _ in res_list]
 
-        assert mock.alarm_flag == True
+        assert mock.alarm_flag == False
 
 
 if __name__ == '__main__':

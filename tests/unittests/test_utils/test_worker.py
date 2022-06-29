@@ -2,7 +2,7 @@ import unittest
 from concurrent.futures import ProcessPoolExecutor
 
 from infer_handler.utils.detect import detect_handlers
-from infer_handler.utils.worker import initial_pool, handler_process
+from infer_handler.utils.worker import initial_handler_pool, handler_process
 
 import numpy
 
@@ -13,7 +13,7 @@ class SchedulerTestCase(unittest.TestCase):
     def setUpClass(cls) -> None:
         detect_handlers('tests.asset.mock_handlers')
 
-        initial_pool()
+        initial_handler_pool()
 
     def test_process_image_handle(self):
         image = numpy.ndarray(shape=(123, 456, 789), dtype=numpy.uint8)

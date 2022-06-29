@@ -7,11 +7,11 @@ Function::
     2. append_handler 添加Handler
 
 """
-from typing import List, Type, Optional
+from typing import Type, Optional, Dict
 
 from ._infer_handler import InferHandler
 
-__global_handlers: List[Type[InferHandler]] = []
+_global_handlers: Dict[str, Type[InferHandler]] = {}
 """全局handler列表"""
 
 
@@ -27,10 +27,10 @@ def get_handler(handler_name: str) -> Type[InferHandler]:
     Returns:
         Type[InferHandler]: Handler类
     """
-    for handler in __global_handlers:
-        if handler.name == handler_name or handler.module_name == handler_name:
-            return handler
-    raise ModuleNotFoundError('Handler not found.')
+    try:
+        return _global_handlers[handler_name]
+    except KeyError as e:
+        raise ModuleNotFoundError('Handler not found.')
 
 
 def append_handler(handler_class: Type[InferHandler]) -> Optional[Type[InferHandler]]:
@@ -43,8 +43,9 @@ def append_handler(handler_class: Type[InferHandler]) -> Optional[Type[InferHand
         Optional[Type[InferHandler]]: 成功添加则返回类本身
     """
     # case 只加入不存在的
-    if handler_class not in __global_handlers:
+    if handler_class.name not in _global_handlers:
         # case 初始化成功才加入
         if handler_class.initial_handler():
-            __global_handlers.append(handler_class)
+            _global_handlers[handler_class.name] = handler_class
+            _global_handlers[handler_class.module_name] = handler_class
             return handler_class

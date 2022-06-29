@@ -35,13 +35,13 @@ class BlankHandler(InferHandler):
 ```python
 
 from infer_handler.utils.detect import detect_handlers
-from infer_handler.utils.worker import initial_pool
+from infer_handler.utils.worker import initial_handler_pool
 
 # 自动检测package路径下文件
 detect_handlers('tests.asset.mock_handlers')
 
 # 初始化进程池
-initial_pool()
+initial_handler_pool()
 ``` 
 
 3. 调用 - 并行处理
@@ -50,7 +50,7 @@ initial_pool()
 from infer_handler.utils.worker import handler_process
 
 # 指定Handler 放入图片 设置其他参数
-future = handler_process('blank_handler', raw_image=image, other_kwargs={'info': 'info_content'})
+future = handler_process('blank_handler', image_info=image, other_kwargs={'info': 'info_content'})
 
 # 得到结果
 result = future.result()

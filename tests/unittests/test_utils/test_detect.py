@@ -25,8 +25,8 @@ class MyTestCase(unittest.TestCase):
     def test_handler_process_not_exist(self):
         """handler_process if handler not exist"""
         with self.assertRaises(Exception) as e:
-            from infer_handler.utils import handler_process, initial_pool
-            initial_pool()
+            from infer_handler.utils import handler_process, initial_handler_pool
+            initial_handler_pool()
             f = handler_process('omega', object)
             f.result()
 
