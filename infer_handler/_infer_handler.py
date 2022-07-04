@@ -84,6 +84,6 @@ class InferHandler(object, metaclass=InferHandlerMeta):
         post_result = cls._post_process(image, **kwargs)
 
         if cls.keep_context:
-            return post_result
+            return {'post_result': post_result, **kwargs}
         else:
             return post_result

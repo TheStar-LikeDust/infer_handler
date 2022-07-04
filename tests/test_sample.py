@@ -20,7 +20,7 @@ class MyTestCase(unittest.TestCase):
         detect_observer('tests.asset.mock_observer')
 
         # initial process pool
-        initial_handler_pool(initial_callback, )
+        initial_handler_pool(8, initial_callback, )
         # initial thread pool
         initial_observer_pool()
 

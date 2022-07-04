@@ -29,7 +29,7 @@ class MyTestCase(unittest.TestCase):
 
         [mock.observer_judge_callback('mock', _) for _ in res_list]
 
-        assert mock.alarm_flag == False
+        assert mock.alarm_flag == True
 
 
 if __name__ == '__main__':

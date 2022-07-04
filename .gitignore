@@ -9,6 +9,8 @@
 !setup.py
 !tutorial.md
 
+/tests/asset
+
 # sphinx
 !/source/conf.py
 !/source/index.rst

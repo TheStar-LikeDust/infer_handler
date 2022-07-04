@@ -17,7 +17,7 @@
 -------
 
 """
-
+import time
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, Future
 from typing import Optional, Callable, Dict, Any, NoReturn, List
 
@@ -37,7 +37,9 @@ registered_image_converter: Dict[str, Callable] = {
 """已注册的图像转换器字典"""
 
 
-def initial_handler_pool(initial_callback: Callable = None, initial_callback_arguments: tuple = tuple()) -> NoReturn:
+def initial_handler_pool(max_worker: int = 8,
+                         initial_callback: Callable = None,
+                         initial_callback_arguments: tuple = tuple()) -> ProcessPoolExecutor:
     """初始化进程
 
     .. Note::
@@ -57,11 +59,14 @@ def initial_handler_pool(initial_callback: Callable = None, initial_callback_arg
         initial_callback_wrapped = auto_detect_handler
         initial_callback_arguments = tuple()
     else:
-        def initial_callback_wrapped():
+        def initial_callback_wrapped(*args):
             auto_detect_handler()
-            initial_callback()
+            initial_callback(*args)
 
-    process_pool = ProcessPoolExecutor(max_workers=8,initializer=initial_callback_wrapped, initargs=initial_callback_arguments)
+    process_pool = ProcessPoolExecutor(max_workers=max_worker, initializer=initial_callback_wrapped,
+                                       initargs=initial_callback_arguments)
+
+    return process_pool
 
 
 def initial_observer_pool() -> ThreadPoolExecutor:
@@ -115,7 +120,7 @@ def infer_callback(handle_name: str,
 
 def handler_process(handle_name: str,
                     image_info: Any = object(),
-                    image_processor_name: str = 'raw_image',
+                    image_converter_name: str = 'raw_image',
                     other_kwargs: dict = None
                     ) -> Future:
     """系统进行推理的入口
@@ -127,7 +132,7 @@ def handler_process(handle_name: str,
         infer_callback,
         handle_name,
         image_info,
-        image_processor_name,
+        image_converter_name,
         other_kwargs,
     )
 
