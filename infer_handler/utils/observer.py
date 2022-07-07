@@ -3,25 +3,31 @@
 
 一个简单的逻辑判断类，用于处理连续的视频帧处理系统中复杂的逻辑判断。
 """
+import time
 from abc import abstractmethod
 from logging import getLogger
 from typing import Any, List, Tuple, NoReturn, Dict, Optional
 
 from collections import deque
 
-# type alies
 
-List[Tuple[bool, Any]]
+# TODO: type alies
+
+# List[Tuple[bool, Any]]
+
+class ObserverMeta(type):
+    def __new__(mcs, name, bases, attrs):
+        attrs['name'] = name
+        return super().__new__(mcs, name, bases, attrs)
 
 
-
-class Observer(object):
+class Observer(object, metaclass=ObserverMeta):
     """逻辑判断类基类
 
     子类继承并实现不同的judge方法，将每一帧判断结果放入缓存队列中，如果报警比例达到触发比例，则执行触发回调。
     """
-    name = 'observer'
-    """判断类类名 = 也是日志类的名字"""
+    name: str
+    """类名"""
 
     required_models = ['person_car', 'fire_smog']
     """需要的模型"""
@@ -30,13 +36,22 @@ class Observer(object):
     """判断结果和识别结果缓存队列 - 滑动窗口"""
 
     trigger_rate: float = 0.5
-    """触发报警的比例"""
+    """滑动窗口中的达到触发预警的比例"""
 
-    cache_length: int = 10
+    trigger_cache_length: int = 10
     """滑动窗口长度"""
+
+    last_trigger_time: float = 0.0
+    """上次触发报警的时间"""
+
+    trigger_time_gap: int = 60
+    """两次触发的时间间隔"""
 
     model_result_mapper = Dict[str, Any]
     """所需要的模型结果字典"""
+
+    trigger_limit: int
+    """触发帧数"""
 
     def __init__(self, logger=None):
         """初始化
@@ -46,7 +61,10 @@ class Observer(object):
             trigger_rate (float, optional): 触发判断比例. Defaults to 0.5.
             logger (_type_, optional): 单独的日志类. Defaults to None.
         """
-        self.judge_result_queue = deque(maxlen=self.cache_length)
+        self.judge_result_queue = deque(maxlen=self.trigger_cache_length)
+
+        self.trigger_limit = int(self.trigger_rate * self.judge_result_queue.maxlen)
+
         # self.trigger_rate = trigger_rate
 
         self.logger = logger if logger else getLogger(self.name)
@@ -54,7 +72,7 @@ class Observer(object):
         self.model_result_mapper = {_: None for _ in self.required_models}
 
         # 填充
-        [self.judge_result_queue.append((False, None)) for _ in range(self.cache_length)]
+        [self.judge_result_queue.append((False, None)) for _ in range(self.trigger_cache_length)]
 
     @abstractmethod
     def judge(self) -> Optional[bool]:
@@ -73,6 +91,7 @@ class Observer(object):
             model_name (str): 模型名字
             result (Any): 模型推理结果
         """
+
         # update
         self.model_result_mapper[model_name] = result
 
@@ -96,6 +115,19 @@ class Observer(object):
             self.model_result_mapper[key] = None
 
     def check_trigger(self):
-        if len(list(filter(lambda x: x[0], self.judge_result_queue))) >= \
-                self.trigger_rate * self.judge_result_queue.maxlen:
+
+        # if len(list(filter(lambda x: x[0], self.judge_result_queue))) >= \
+        #         self.trigger_rate * self.judge_result_queue.maxlen:
+        #
+        #     if time.time() - self.last_trigger_time > self.trigger_time_gap:
+        #         self.last_trigger_time = time.time()
+        #         self.trigger()
+
+        trigger_frame_flag = len(list(filter(lambda x: x[0], self.judge_result_queue))) >= self.trigger_limit
+
+        trigger_time_flag = time.time() - self.last_trigger_time > self.trigger_time_gap
+
+        # case: 大于阈值 且 上次触发间隔大于设置的间隔
+        if trigger_frame_flag and trigger_time_flag:
+            self.last_trigger_time = time.time()
             self.trigger()

@@ -8,12 +8,11 @@ from importlib import import_module
 import pkgutil
 from logging import getLogger
 from types import ModuleType
-from typing import NoReturn, Iterator, Type, List
+from typing import NoReturn, Iterator
 
 from infer_handler import InferHandler
-from infer_handler._global import _global_handlers, append_handler
+from infer_handler.utils._global import append_handler, append_observer
 from .observer import Observer
-from . import _global_observer, append_observer
 
 logger = getLogger(__name__)
 """日志类"""
@@ -61,23 +60,23 @@ def detect_observer(module_package_path: str) -> NoReturn:
         module_package_path (str): 符合Python package格式的路径
     """
     for target_module in _load_module_in_package(module_package_path):
-
         for observer in _find_class_in_module(target_module, Observer):
             append_observer(observer)
 
 
 # auto
-def auto_detect_handler():
+
+def auto_detect_handler(package_path: str = 'handlers'):
     """自动加载handler"""
     try:
-        detect_handlers('handlers')
+        detect_handlers(package_path)
     except ModuleNotFoundError as e:
         logger.info('Auto detect handlers failed.')
 
 
-def auto_detect_observer():
+def auto_detect_observer(package_path: str = 'observers'):
     """自动加载observer"""
     try:
-        detect_observer('observers')
+        detect_observer(package_path)
     except ModuleNotFoundError as e:
         logger.info('Auto detect observer failed.')

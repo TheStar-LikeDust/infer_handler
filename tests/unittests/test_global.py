@@ -1,10 +1,8 @@
 import unittest
 
-from infer_handler import _global
-
 from infer_handler import InferHandler
 
-from infer_handler._global import get_handler, append_handler
+from infer_handler.utils._global import get_handler, append_handler
 
 
 class GlobalTest(InferHandler):

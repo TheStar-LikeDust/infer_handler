@@ -21,9 +21,8 @@ import time
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, Future
 from typing import Optional, Callable, Dict, Any, NoReturn, List
 
-from infer_handler import get_handler
 from .detect import auto_detect_handler
-from . import _global_observer
+from ._global import _global_observer, get_handler
 
 process_pool: Optional[ProcessPoolExecutor] = None
 """核心进程池"""

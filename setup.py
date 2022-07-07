@@ -13,5 +13,15 @@ setup(
     url='https://github.com/TheStar-LikeDust/infer_handler',
     python_requires='>=3.8',
     packages=find_packages(exclude=['tests*']),
+    # patched
+    install_requires=[
+        'Click',
+        'tqdm',
+        'prettytable',
+    ],
+    entry_points='''
+        [console_scripts]
+        infer_handler_tool=infer_handler.utils.simulator.commands:cli
+    ''',
     license='Apache License 2.0'
 )

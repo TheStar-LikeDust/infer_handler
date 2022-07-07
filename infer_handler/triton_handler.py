@@ -16,6 +16,10 @@ CLIENT: Optional[InferenceServerClient] = None
 
 def get_client() -> InferenceServerClient:
     """获取当前Triton客户端"""
+    if not CLIENT:
+        triton_address = input('Triton server address:')
+        set_client(InferenceServerClient(url=triton_address))
+
     return CLIENT
 
 

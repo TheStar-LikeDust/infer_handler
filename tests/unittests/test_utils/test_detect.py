@@ -3,7 +3,7 @@ import unittest
 
 from infer_handler.utils.detect import detect_handlers
 
-from infer_handler import get_handler
+from infer_handler.utils._global import get_handler
 
 
 class MyTestCase(unittest.TestCase):

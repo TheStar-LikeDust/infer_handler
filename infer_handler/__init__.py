@@ -4,7 +4,6 @@
 
 """
 
-__version__ = '2022.6.20'
+__version__ = '2022.7.7'
 
 from ._infer_handler import InferHandler
-from ._global import get_handler, append_handler
