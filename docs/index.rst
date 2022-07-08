@@ -17,9 +17,6 @@ infer_handler 简要教程!
 
 -------
 
-简要介绍:
-
-:doc:`README`
 
 直接上手:
 

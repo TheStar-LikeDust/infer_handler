@@ -1,6 +1,6 @@
 import time
 import unittest
-from typing import Any, NoReturn, Optional
+from typing import NoReturn, Optional
 
 from infer_handler.utils.observer import Observer
 

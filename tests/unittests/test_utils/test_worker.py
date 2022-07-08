@@ -24,7 +24,7 @@ class SchedulerTestCase(unittest.TestCase):
     def test_process_image_handle(self):
         image = numpy.ndarray(shape=(123, 456, 789), dtype=numpy.uint8)
 
-        future = handler_process('blank_handler', image_info=image, other_kwargs={'info': 'info_content'})
+        future = handler_process('BlankHandler', image_info=image, other_kwargs={'info': 'info_content'})
 
         assert future
 

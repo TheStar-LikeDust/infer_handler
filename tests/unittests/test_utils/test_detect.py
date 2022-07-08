@@ -14,7 +14,6 @@ class MyTestCase(unittest.TestCase):
         handler = get_handler('BlankHandler')
 
         assert handler.name == 'BlankHandler'
-        assert handler.module_name == 'blank_handler'
 
     def test_not_exist_handler(self):
         """get_handler if handler not exist"""

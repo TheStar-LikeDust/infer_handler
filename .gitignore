@@ -13,8 +13,8 @@
 /tests/asset
 
 # sphinx
-!/source/conf.py
-!/source/index.rst
+!/docs/conf.py
+!/docs/index.rst
 
 Makefile
 

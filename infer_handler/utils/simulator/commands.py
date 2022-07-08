@@ -14,7 +14,6 @@ import json
 import os
 import sys
 import time
-import uuid
 from typing import Tuple
 
 import click
@@ -159,7 +158,7 @@ def do_infer(video: str, handler: Tuple[str], triton: str):
     infer_result = infer(image_list, *handler)
 
     click.echo('-' * 80)
-    file_name = f'infer_result_{uuid.uuid1().node}.json'
+    file_name = f'infer_result_{int(time.time())}.json'
 
     click.echo(f'* 保存推理结果至 -> {file_name}')
     with open(file_name, 'w') as f:
