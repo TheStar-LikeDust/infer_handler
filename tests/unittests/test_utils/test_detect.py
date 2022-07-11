@@ -1,4 +1,3 @@
-import sys
 import unittest
 
 from infer_handler.utils.detect import detect_handlers
@@ -6,7 +5,7 @@ from infer_handler.utils.detect import detect_handlers
 from infer_handler.utils._global import get_handler
 
 
-class MyTestCase(unittest.TestCase):
+class DetectTestCase(unittest.TestCase):
     def test_detect_handlers(self):
         """get_handler"""
         detect_handlers('tests.asset.mock_handlers')

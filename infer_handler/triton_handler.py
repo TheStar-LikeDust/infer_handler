@@ -8,10 +8,18 @@ from typing import Any, Optional, List
 
 from tritonclient.http import InferInput, InferRequestedOutput, InferenceServerClient, InferAsyncRequest
 
-from . import InferHandler
+from . import InferHandler, TRITON_CLIENT_HTTP_FLAG
 
 CLIENT: Optional[InferenceServerClient] = None
 """当前全局的Triton 客户端连接"""
+
+try:
+    if TRITON_CLIENT_HTTP_FLAG:
+        from tritonclient.http import InferInput, InferRequestedOutput, InferenceServerClient, InferAsyncRequest
+    else:
+        from tritonclient.grpc import InferInput, InferRequestedOutput, InferenceServerClient
+except ModuleNotFoundError as e:
+    print('cannot import tritonclient', e)
 
 
 def get_client() -> InferenceServerClient:

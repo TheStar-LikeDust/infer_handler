@@ -55,3 +55,10 @@ future = handler_process('blank_handler', image_info=image, other_kwargs={'info'
 # 得到结果
 result = future.result()
 ```
+
+## roadmap and TODO List:
+
+- unitest in detect\observer\worker
+- doc and tutorial
+
+

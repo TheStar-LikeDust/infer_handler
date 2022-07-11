@@ -8,11 +8,6 @@ from infer_handler.utils.worker import initial_handler_pool, handler_process
 import numpy
 
 
-def test_initial(number: int):
-    print(number)
-    pass
-
-
 class SchedulerTestCase(unittest.TestCase):
 
     @classmethod
@@ -32,13 +27,6 @@ class SchedulerTestCase(unittest.TestCase):
 
         assert result['info'] == 'info_content'
         assert result['shape'] == (123, 456, 789)
-
-    def test_initial_handler_pool(self):
-        """传入参数"""
-
-        pool = initial_handler_pool(max_worker=2, initial_callback=test_initial, initial_callback_arguments=(5,))
-
-        pool.submit(lambda: None)
 
 
 if __name__ == '__main__':
