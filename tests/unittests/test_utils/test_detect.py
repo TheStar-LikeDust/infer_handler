@@ -8,7 +8,7 @@ from infer_handler.utils._global import get_handler
 class DetectTestCase(unittest.TestCase):
     def test_detect_handlers(self):
         """get_handler"""
-        detect_handlers('tests.asset.mock_handlers')
+        detect_handlers('tests.mocks.mock_handlers')
 
         handler = get_handler('BlankHandler')
 
@@ -23,9 +23,9 @@ class DetectTestCase(unittest.TestCase):
     def test_handler_process_not_exist(self):
         """handler_process if handler not exist"""
         with self.assertRaises(Exception) as e:
-            from infer_handler.utils import handler_process, initial_handler_pool
+            from infer_handler.utils import _handler_process, initial_handler_pool
             initial_handler_pool()
-            f = handler_process('omega', object)
+            f = _handler_process('omega', object)
             f.result()
 
 

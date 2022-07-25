@@ -6,6 +6,7 @@ from typing import Any, Optional
 
 from numpy import ndarray, expand_dims, int32, float32, array
 
+from infer_handler.structure import ModelResult, TargetObject, Point
 from infer_handler.triton_handler import TritonHandler, InferInput, InferRequestedOutput
 
 input_image = InferInput('image', [1, 1080, 1920, 3], "UINT8")
@@ -18,9 +19,10 @@ input_nms_conf_thresholds.set_data_from_numpy(array([(0.4, 0.25)], dtype=float32
 output = InferRequestedOutput('result')
 model_name = 'pedestrian_yolov5_pipeline'
 
-
 class PipelineHandler(TritonHandler):
     """Demo"""
+
+    label_nick_name = 'person'
 
     triton_model_name = 'pedestrian_yolov5_pipeline'
     triton_inputs = [input_image, input_nms_conf_thresholds, input_infer_size]
@@ -31,5 +33,20 @@ class PipelineHandler(TritonHandler):
         cls.triton_inputs[0].set_data_from_numpy(expand_dims(image, axis=0))
 
     @classmethod
-    def _post_process(cls, image: Any, **kwargs) -> Optional[Any]:
-        return kwargs.get('infer_result').as_numpy('result')
+    def _post_process(cls, image: Any, **kwargs) -> Optional[ModelResult]:
+        person_result = kwargs.get('infer_result').as_numpy('result')[0]
+
+        persons = []
+        for person in person_result:
+            persons.append(
+                TargetObject(
+                    detect_class='person',
+                    confidence=round(float(person[1]), 4),
+                    box=(
+                        Point(int(person[2]), int(person[3])),
+                        Point(int(person[4]), int(person[5])),
+                    )
+                )
+            )
+        return persons
+

@@ -8,8 +8,8 @@ import time
 import cv2
 from tritonclient.grpc import InferenceServerClient
 
-image = cv2.imread(r'tests/asset/p0.jpg')
-client = InferenceServerClient(url='localhost:8352')
+image = cv2.imread(r'tests/mocks/p0.jpg')
+_client = InferenceServerClient(url='localhost:8352')
 
 from tritonclient.grpc import InferInput, InferRequestedOutput
 
@@ -48,7 +48,7 @@ def loop_infer_200():
         #     client_timeout=1,
         # )
         s = time.time()
-        infer_result = client.infer(
+        infer_result = _client.infer(
             model_name='fire_smog_yolov5_v3',
             inputs=triton_inputs,
             outputs=triton_outputs,

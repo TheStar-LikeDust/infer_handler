@@ -49,9 +49,16 @@ common_options = {
             help='[Common] 是否使用HTTP Client',
         ),
 
-    'triton_connect':
+    'triton_host':
         click.Option(
-            param_decls=['--triton_connect', 'triton_connect'],
+            param_decls=['--triton_host', 'triton_host'],
+            default='localhost',
+            help='[Common] Triton连接地址',
+        ),
+
+    'triton_port':
+        click.Option(
+            param_decls=['--triton_port', 'triton_port'],
             default='',
             help='[Common] Triton连接地址',
         ),
@@ -78,6 +85,7 @@ def base_command(name, options):
         wrap_command = click.Command(
             name=name if name else wrap_function.__name__,
             callback=wrap_function,
+            help=wrap_function.__doc__
         )
 
         if options:
@@ -99,8 +107,10 @@ def process_base_kwargs(kwargs_dict):
 
     # 连接Triton
     from infer_handler.triton_handler import set_client, InferenceServerClient
-    if triton_url := kwargs_dict.get('triton_connect'):
-        set_client(client=InferenceServerClient(url=triton_url))
+    triton_host = kwargs_dict.get('triton_host')
+    triton_port = kwargs_dict.get('triton_port')
+    if triton_host and triton_port:
+        set_client(host=triton_host, port=triton_port)
 
     # 导入组件
     if observer_package := kwargs_dict.get('observers'):
@@ -112,7 +122,7 @@ def process_base_kwargs(kwargs_dict):
 
 @base_command(name='show', options=['handlers', 'observers'])
 def show_components(**kwargs):
-    """打印当前的组件: Handlers和Observers"""
+    """打印当前路径下的组件（Handlers 和 Observer）"""
 
     process_base_kwargs(kwargs)
 
@@ -144,7 +154,7 @@ def show_components(**kwargs):
 @click.option('observer', '--observer', default=None, help='指定测试的observer名')
 @click.option('handler', '--handler', default=None, help='指定测试的handler名')
 @click.option('image', '--image', default=None, help='测试图片')
-@base_command(name='check', options=['handlers', 'observers'])
+@base_command(name='check', options=['handlers', 'observers', 'triton_host', 'triton_port'])
 def check_component(handler=None, observer=None, image=None, **kwargs):
     """检查组件是否正常运行"""
     process_base_kwargs(kwargs)
@@ -186,7 +196,7 @@ def check_component(handler=None, observer=None, image=None, **kwargs):
 
 @click.option('video', '--video', prompt=True)
 @click.option('handler', '--handler', multiple=True, prompt=True)
-@base_command(name='infer', options=['handlers', 'http_client', 'triton_connect'])
+@base_command(name='infer', options=['handlers', 'http_client', 'triton_host', 'triton_port'])
 def do_infer(video: str, handler: Tuple[str], **kwargs):
     """生成检测结果"""
     process_base_kwargs(kwargs)

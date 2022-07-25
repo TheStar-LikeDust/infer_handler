@@ -21,8 +21,21 @@ class Mock(Observer):
         self.alarm_flag = True
 
 
-class MyTestCase(unittest.TestCase):
-    def test_trigger(self):
+class ObserverTestCase(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        from infer_handler.utils.worker import initial_observer_pool, observer_process
+
+        initial_observer_pool()
+
+    def setUp(self) -> None:
+        from infer_handler.utils import _global
+        # clear
+        _global._global_observer = []
+
+    def test_judge_manual(self):
+        """observer judge callback"""
         mock = Mock()
 
         res_list = [i for i in range(20)]

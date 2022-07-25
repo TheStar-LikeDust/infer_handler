@@ -5,6 +5,8 @@ from tritonclient.grpc import InferenceServerClient as grpc_client
 from tritonclient.http import InferenceServerClient as http_client
 
 from infer_handler import switch_to_http
+from infer_handler.utils import detect_handlers
+from infer_handler.utils._global import get_handler
 
 
 class TritonHandlerTestCase(unittest.TestCase):
@@ -17,8 +19,8 @@ class TritonHandlerTestCase(unittest.TestCase):
 
         assert InferenceServerClient is http_client
 
-    def test_infer(self):
-        """TODO"""
+    def test_get_client(self):
+        """test get client"""
 
 
 if __name__ == '__main__':

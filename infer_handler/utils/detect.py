@@ -48,7 +48,6 @@ def detect_handlers(module_package_path: str) -> NoReturn:
         module_package_path (str): 符合Python package格式的路径
     """
     for target_module in _load_module_in_package(module_package_path):
-
         for handler in _find_class_in_module(target_module, InferHandler):
             append_handler(handler)
 

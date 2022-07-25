@@ -96,7 +96,7 @@ class Observer(object, metaclass=ObserverMeta):
         self.model_result_mapper[model_name] = result
 
         # case: 判断是否满足一次judge的条件
-        if all(self.model_result_mapper.values()):
+        if set(self.model_result_mapper.keys()) == set(self.required_models):
             try:
                 judge_result = self.judge()
             except Exception as e:
@@ -111,18 +111,9 @@ class Observer(object, metaclass=ObserverMeta):
             self.check_trigger()
 
     def clear_model_result(self):
-        for key in self.model_result_mapper.keys():
-            self.model_result_mapper[key] = None
+        self.model_result_mapper.clear()
 
     def check_trigger(self):
-
-        # if len(list(filter(lambda x: x[0], self.judge_result_queue))) >= \
-        #         self.trigger_rate * self.judge_result_queue.maxlen:
-        #
-        #     if time.time() - self.last_trigger_time > self.trigger_time_gap:
-        #         self.last_trigger_time = time.time()
-        #         self.trigger()
-
         trigger_frame_flag = len(list(filter(lambda x: x[0], self.judge_result_queue))) >= self.trigger_limit
 
         trigger_time_flag = time.time() - self.last_trigger_time > self.trigger_time_gap
