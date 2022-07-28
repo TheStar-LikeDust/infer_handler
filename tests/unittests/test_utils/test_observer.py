@@ -8,7 +8,7 @@ from infer_handler.utils.observer import Observer
 class Mock(Observer):
     name = 'Mock'
 
-    required_models = ['mock', ]
+    required_labels = ['mock', ]
 
     def judge(self) -> Optional[bool]:
         return True

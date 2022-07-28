@@ -29,7 +29,7 @@ class Observer(object, metaclass=ObserverMeta):
     name: str
     """类名"""
 
-    required_models = ['person_car', 'fire_smog']
+    required_labels = []
     """需要的模型"""
 
     judge_result_queue = List[Tuple[bool, Any]]
@@ -69,7 +69,7 @@ class Observer(object, metaclass=ObserverMeta):
 
         self.logger = logger if logger else getLogger(self.name)
 
-        self.model_result_mapper = {_: None for _ in self.required_models}
+        self.model_result_mapper = {_: None for _ in self.required_labels}
 
         # 填充
         [self.judge_result_queue.append((False, None)) for _ in range(self.trigger_cache_length)]
@@ -96,7 +96,7 @@ class Observer(object, metaclass=ObserverMeta):
         self.model_result_mapper[model_name] = result
 
         # case: 判断是否满足一次judge的条件
-        if set(self.model_result_mapper.keys()) == set(self.required_models):
+        if set(self.model_result_mapper.keys()) == set(self.required_labels):
             try:
                 judge_result = self.judge()
             except Exception as e:

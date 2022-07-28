@@ -3,6 +3,7 @@ import unittest
 
 import numpy
 
+from infer_handler.structure import InferTask
 from infer_handler.utils import *
 
 
@@ -25,9 +26,13 @@ class MyTestCase(unittest.TestCase):
         initial_observer_pool()
 
         # generate infer task
-
-        f = _handler_process('blank_handler', pic)
-        f.add_done_callback(lambda x: observer_process('normal', x.result()))
+        f = handler_process(
+            InferTask(
+                handle_name='BlankHandler',
+                image_info=None,
+            )
+        )
+        f.add_done_callback(lambda x: observer_process(x.result()))
 
         time.sleep(1)
 
@@ -38,5 +43,3 @@ class MyTestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-

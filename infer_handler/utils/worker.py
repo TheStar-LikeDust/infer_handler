@@ -177,10 +177,11 @@ def handler_process(infer_task: InferTask):
 
 
 def observer_process(
-        model_name: str,
         handler_result: HandlerResult
 ) -> List[Future]:
     futures = []
-    for current_observer in filter(lambda x: model_name in x.required_models, _global_observer):
-        futures.append(thread_pool.submit(current_observer.observer_judge_callback, model_name, handler_result))
+
+    for model_name, value in handler_result.items():
+        for current_observer in filter(lambda x: model_name in x.required_labels, _global_observer):
+            futures.append(thread_pool.submit(current_observer.observer_judge_callback, model_name, value))
     return futures

@@ -5,7 +5,7 @@
 """
 from infer_handler._infer_handler import InferHandler
 
-__version__ = '2022.7.25'
+__version__ = '2022.7.28'
 
 TRITON_CLIENT_HTTP_FLAG = False
 

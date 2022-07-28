@@ -39,12 +39,12 @@ class SchedulerTestCase(unittest.TestCase):
 
     def test_handler_process_failed(self):
         """Failed"""
-        handler_result = handler_process(InferTask(
-            handle_name='SubErrorHandler',
-            image_info=None,
-        )).result()
 
-
+        with self.assertRaises(AssertionError) as ae:
+            handler_result = handler_process(InferTask(
+                handle_name='SubErrorHandler',
+                image_info=None,
+            )).result()
 
     def test_sub_task(self):
         """case: sub-task."""

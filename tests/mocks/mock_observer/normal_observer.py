@@ -9,9 +9,9 @@ from infer_handler.utils import Observer
 
 
 class Normal(Observer):
-    required_models = ['normal']
+    required_labels = ['blank']
 
-    def judge(self, result: Any) -> Optional[bool]:
+    def judge(self) -> Optional[bool]:
         print('judge!')
 
     def trigger(self) -> NoReturn:
